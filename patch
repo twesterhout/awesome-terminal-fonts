@@ -92,12 +92,14 @@ class BoundingBox(object):
     def aspect_ratio(self):
         return float(self._width) / float(self._height)
 
+    @property
+    def is_empty(self):
+        return self.width == 0 or self.height == 0
+
 
 def adapt(glyph, magic_glyph, aspect_ratio_cutoff=0.7):
     box = BoundingBox(glyph)
-    # Nothing to do for empty glyphs
-    if box.height == 0 or box.width == 0:
-        return
+    assert not box.is_empty
     is_wide = box.aspect_ratio >= aspect_ratio_cutoff
     target_box = BoundingBox(magic_glyph)
     target_width = target_box.width + int(is_wide) * magic_glyph.width
@@ -130,7 +132,11 @@ def main():
     name_to_codepoint = {}
 
     for symbol in symbols.glyphs("encoding"):
-        if symbol.unicode > 0 and symbol.codepoint not in font:
+        if (
+            symbol.unicode > 0
+            and symbol.codepoint not in font
+            and not BoundingBox(symbol).is_empty
+        ):
             symbols.selection.select(symbol.encoding)
             symbols.copy()
             glyph = font.createMappedChar(symbol.codepoint)
