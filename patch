@@ -154,7 +154,7 @@ def main():
     font.generate("{}.{}".format(output_name, extension))
 
     with open("{}.sh".format(output_name), "w") as f:
-        f.write("declare -a _FONT_AWESOME=(\n")
+        f.write("declare -A _FONT_AWESOME=(\n")
         for name, codepoint in name_to_codepoint.iteritems():
             f.write("    [{}]={}\n".format(name, codepoint))
         f.write(")\n")
